@@ -1,0 +1,38 @@
+name: X-Asena Bot
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout X-Asena
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env
+        run: |
+          cat > .env <<EOF
+          OWNER_NUMBER=${{ secrets.OWNER_NUMBER }}
+          BOT_MODE=public
+          BOT_LANG=en
+          DATABASE_URL=./database.db
+          PAIRING_NUMBER=${{ secrets.PAIRING_NUMBER }}
+          STICKER_PACKNAME=X-Asena
+          STICKER_AUTHOR=X-Asena
+          LOG_LEVEL=warn
+          BAILEYS_LOG_LEVEL=silent
+          EOF
+
+      - name: Start X-Asena
+        run: npm start
